@@ -4,13 +4,14 @@ import cv2
 
 import rospy
 from sensor_msgs.msg import CompressedImage
+from std_msgs.msg import Bool
 from cv_bridge import CvBridge, CvBridgeError
 
 import numpy as np
 
 
 class ArucoDetector():
-    aruco_dict = cv2.aruco.Dictionary_get(cv2.aruco.DICT_4X4_100)
+    aruco_dict = cv2.aruco.Dictionary_get(cv2.aruco.DICT_5X5_100)
     aruco_params = cv2.aruco.DetectorParameters_create()
 
     frame_sub_topic = '/depthai_node/image/compressed'
@@ -59,6 +60,15 @@ class ArucoDetector():
                 cv2.line(frame, bottom_left, top_left, (0, 255, 0), 2)
 
                 rospy.loginfo("Aruco detected, ID: {}".format(marker_ID))
+
+                # Landing site simple flag - grab current drone location 
+                land_pub = rospy.Publisher('landing_site', Bool, queue_size=2)
+                msg = True
+                land_pub.publish(msg)
+
+                pay_pub = rospy.Publisher('payload_drop', Bool, queue_size=2)
+                msg = True
+                pay_pub.publish(msg)
 
                 cv2.putText(frame, str(
                     marker_ID), (top_left[0], top_right[1] - 15), cv2.FONT_HERSHEY_COMPLEX, 0.5, (0, 255, 0), 2)
