@@ -18,6 +18,7 @@ import numpy as np
 import depthai as dai
 import rospy
 from sensor_msgs.msg import CompressedImage, Image, CameraInfo
+from std_msgs.msg import Bool
 from cv_bridge import CvBridge, CvBridgeError
 
 ############################### ############################### Parameters ###############################
@@ -233,6 +234,10 @@ class DepthaiCamera():
         msg_out.header.frame_id = "home"
         msg_out.data = np.array(cv2.imencode('.jpg', frame)[1]).tostring()
         self.pub_image_detect.publish(msg_out)
+
+        pay_pub = rospy.Publisher('payload_drop', Bool, queue_size=2)
+        msg = True
+        pay_pub.publish(msg)
         
     ############################### ############################### Functions ###############################
     ######### Functions for Yolo Decoding

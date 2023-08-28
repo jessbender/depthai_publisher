@@ -62,13 +62,9 @@ class ArucoDetector():
                 rospy.loginfo("Aruco detected, ID: {}".format(marker_ID))
 
                 # Landing site simple flag - grab current drone location 
-                land_pub = rospy.Publisher('landing_site', Bool, queue_size=2)
+                land_pub = rospy.Publisher("landing_site", Bool, queue_size=2)
                 msg = True
                 land_pub.publish(msg)
-
-                pay_pub = rospy.Publisher('payload_drop', Bool, queue_size=2)
-                msg = True
-                pay_pub.publish(msg)
 
                 cv2.putText(frame, str(
                     marker_ID), (top_left[0], top_right[1] - 15), cv2.FONT_HERSHEY_COMPLEX, 0.5, (0, 255, 0), 2)
