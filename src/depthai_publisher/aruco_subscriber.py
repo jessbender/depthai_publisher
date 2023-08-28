@@ -19,6 +19,8 @@ class ArucoDetector():
     def __init__(self):
         self.aruco_pub = rospy.Publisher(
             '/processed_aruco/image/compressed', CompressedImage, queue_size=10)
+        self.land_pub = rospy.Publisher('landing_site', Bool, queue_size=2)
+        self.landing = False
 
         self.br = CvBridge()
 
@@ -60,11 +62,7 @@ class ArucoDetector():
                 cv2.line(frame, bottom_left, top_left, (0, 255, 0), 2)
 
                 rospy.loginfo("Aruco detected, ID: {}".format(marker_ID))
-
-                # Landing site simple flag - grab current drone location 
-                land_pub = rospy.Publisher("landing_site", Bool, queue_size=2)
-                msg = True
-                land_pub.publish(msg)
+                self.landing = True
 
                 cv2.putText(frame, str(
                     marker_ID), (top_left[0], top_right[1] - 15), cv2.FONT_HERSHEY_COMPLEX, 0.5, (0, 255, 0), 2)
@@ -78,6 +76,11 @@ class ArucoDetector():
         msg_out.data = np.array(cv2.imencode('.jpg', frame)[1]).tostring()
 
         self.aruco_pub.publish(msg_out)
+
+        msg = Bool()
+        msg.data = self.landing
+        
+        self.land_pub.publish(msg)
 
 
 def main():
