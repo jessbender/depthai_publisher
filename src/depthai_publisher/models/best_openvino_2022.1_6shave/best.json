@@ -53,8 +53,8 @@
     },
     "mappings": {
         "labels": [
-            "Backpack",
-            "Hand",
+            "-1",
+            "Bag",
             "Person"
         ]
     },
