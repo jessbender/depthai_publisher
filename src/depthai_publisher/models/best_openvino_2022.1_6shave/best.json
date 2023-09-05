@@ -1,7 +1,7 @@
 {
     "model": {
-        "xml": "best.xml",
-        "bin": "best.bin"
+        "xml": "best_2.xml",
+        "bin": "best_2.bin"
     },
     "nn_config": {
         "output_format": "detection",
