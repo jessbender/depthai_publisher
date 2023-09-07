@@ -6,6 +6,7 @@ import rospy
 from sensor_msgs.msg import CompressedImage
 from std_msgs.msg import Bool
 from cv_bridge import CvBridge, CvBridgeError
+from geometry_msgs.msg import PoseStamped
 
 import numpy as np
 
@@ -21,8 +22,14 @@ class ArucoDetector():
             '/processed_aruco/image/compressed', CompressedImage, queue_size=10)
         self.land_pub = rospy.Publisher('landing_site', Bool, queue_size=2)
         self.landing = False
+        self.sub_uav_pose = rospy.Subscriber('/mavros/local_position/pose', PoseStamped, self.callback_uav_pose)
 
         self.br = CvBridge()
+
+        # init UAV pose
+        self.uav_pose = []
+        self.x_coord = []
+        self.y_coord = []
 
         if not rospy.is_shutdown():
             self.frame_sub = rospy.Subscriber(
@@ -40,6 +47,13 @@ class ArucoDetector():
         # cv2.imshow('aruco', aruco)
         # cv2.waitKey(1)
 
+    def callback_uav_pose(self, msg_in):
+        self.current_location = msg_in.pose.position
+        self.uav_pose = [self.current_location.x, self.current_location.y, self.current_location.z, 0.0]
+        self.x_coord = self.uav_pose[0]
+        self.y_coord = self.uav_pose[1]
+          
+
     def find_aruco(self, frame):
         (corners, ids, _) = cv2.aruco.detectMarkers(
             frame, self.aruco_dict, parameters=self.aruco_params)
@@ -48,6 +62,7 @@ class ArucoDetector():
             ids = ids.flatten()
 
             for (marker_corner, marker_ID) in zip(corners, ids):
+                # TODO: if marker_ID == land_aruco
                 corners = marker_corner.reshape((4, 2))
                 (top_left, top_right, bottom_right, bottom_left) = corners
 
@@ -61,7 +76,7 @@ class ArucoDetector():
                 cv2.line(frame, bottom_right, bottom_left, (0, 255, 0), 2)
                 cv2.line(frame, bottom_left, top_left, (0, 255, 0), 2)
 
-                rospy.loginfo("Aruco detected, ID: {}".format(marker_ID))
+                rospy.loginfo("Aruco detected, ID: {} a coordinate: {}, {}".format(marker_ID, self.x_coord, self.y_coord))
                 self.landing = True
 
                 cv2.putText(frame, str(
