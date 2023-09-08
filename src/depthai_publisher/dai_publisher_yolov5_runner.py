@@ -17,6 +17,7 @@ import cv2
 import numpy as np
 import depthai as dai
 import rospy
+from math import *
 from sensor_msgs.msg import CompressedImage, Image, CameraInfo
 from std_msgs.msg import Bool, String
 from cv_bridge import CvBridge, CvBridgeError
@@ -260,8 +261,8 @@ class DepthaiCamera():
         for detection in detections:
             if detection.label != "-1" :
                 bbox = self.frameNorm(overlay, (detection.xmin, detection.ymin, detection.xmax, detection.ymax))
-                x_p = (bbox[0]+bbox[2])/2
-                y_p = (bbox[1]+bbox[3])/2
+                x_p = int(ceil((bbox[0]+bbox[2])/2))
+                y_p = int(ceil((bbox[1]+bbox[3])/2))
                 
                 target_msg = labels[detection.label] + '-' + str(x_p) + '-' + str(y_p)
                 msg.data = target_msg
