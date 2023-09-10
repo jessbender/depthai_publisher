@@ -259,7 +259,7 @@ class DepthaiCamera():
         msg = String()
         msg.data = ''
         for detection in detections:
-            if detection.label != "-1" :
+            if detection.label != '-1' :
                 bbox = self.frameNorm(overlay, (detection.xmin, detection.ymin, detection.xmax, detection.ymax))
                 x_p = int(ceil((bbox[0]+bbox[2])/2))
                 y_p = int(ceil((bbox[1]+bbox[3])/2))
@@ -271,6 +271,7 @@ class DepthaiCamera():
                 cv2.rectangle(overlay, (bbox[0], bbox[1]), (bbox[2], bbox[3]), color, 2)
         
         self.pub_topic_coord.publish(msg)
+
 
         return overlay
 
