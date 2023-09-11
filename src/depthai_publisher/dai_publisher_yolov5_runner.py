@@ -259,7 +259,8 @@ class DepthaiCamera():
         msg = String()
         msg.data = ''
         for detection in detections:
-            if detection.label != '-1' :
+            if labels[detection.label] != "-1" :
+                rospy.loginfo(labels[detection.label])
                 bbox = self.frameNorm(overlay, (detection.xmin, detection.ymin, detection.xmax, detection.ymax))
                 x_p = int(ceil((bbox[0]+bbox[2])/2))
                 y_p = int(ceil((bbox[1]+bbox[3])/2))
@@ -269,10 +270,9 @@ class DepthaiCamera():
                 cv2.putText(overlay, labels[detection.label], (bbox[0] + 10, bbox[1] + 20), cv2.FONT_HERSHEY_TRIPLEX, 0.5, 255)
                 cv2.putText(overlay, f"{int(detection.confidence * 100)}%", (bbox[0] + 10, bbox[1] + 40), cv2.FONT_HERSHEY_TRIPLEX, 0.5, 255)
                 cv2.rectangle(overlay, (bbox[0], bbox[1]), (bbox[2], bbox[3]), color, 2)
+
+                self.pub_topic_coord.publish(msg)
         
-        self.pub_topic_coord.publish(msg)
-
-
         return overlay
 
     # Start defining a pipeline
