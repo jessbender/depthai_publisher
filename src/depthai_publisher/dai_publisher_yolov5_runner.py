@@ -67,6 +67,7 @@ class DepthaiCamera():
     pub_topic_detect = '/depthai_node/detection/compressed'
     pub_topic_cam_inf = '/depthai_node/camera/camera_info'
     pub_topic_coord = '/depthai_node/detection/target_coord'
+    pub_tts = '/depthai_node/detection/tts'
 
     def __init__(self):
         self.pipeline = dai.Pipeline()
@@ -79,7 +80,11 @@ class DepthaiCamera():
         self.pub_image = rospy.Publisher(self.pub_topic, CompressedImage, queue_size=10)
         self.pub_image_raw = rospy.Publisher(self.pub_topic_raw, Image, queue_size=10)
         self.pub_image_detect = rospy.Publisher(self.pub_topic_detect, CompressedImage, queue_size=10)
+
         self.pub_topic_coord = rospy.Publisher(self.pub_topic_coord, String, queue_size=10)
+
+        self.pub_tts = rospy.Publisher(self.pub_tts, String, queue_size=10)
+
         # Create a publisher for the CameraInfo topic
         self.pub_cam_inf = rospy.Publisher(self.pub_topic_cam_inf, CameraInfo, queue_size=10)
         # Create a timer for the callback
@@ -258,6 +263,8 @@ class DepthaiCamera():
         overlay =  frame.copy()
         msg = String()
         msg.data = ''
+        tts_target = String()
+        tts_target.data = ''
         for detection in detections:
             if labels[detection.label] != "-1" :
                 rospy.loginfo(labels[detection.label])
@@ -267,11 +274,13 @@ class DepthaiCamera():
                 
                 target_msg = labels[detection.label] + '-' + str(x_p) + '-' + str(y_p)
                 msg.data = target_msg
+                tts_target.data = labels[detection.label]
                 cv2.putText(overlay, labels[detection.label], (bbox[0] + 10, bbox[1] + 20), cv2.FONT_HERSHEY_TRIPLEX, 0.5, 255)
                 cv2.putText(overlay, f"{int(detection.confidence * 100)}%", (bbox[0] + 10, bbox[1] + 40), cv2.FONT_HERSHEY_TRIPLEX, 0.5, 255)
                 cv2.rectangle(overlay, (bbox[0], bbox[1]), (bbox[2], bbox[3]), color, 2)
 
                 self.pub_topic_coord.publish(msg)
+                self.pub_tts.publish(tts_target)
         
         return overlay
 
