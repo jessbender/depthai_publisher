@@ -22,7 +22,9 @@ class ArucoDetector():
             '/processed_aruco/image/compressed', CompressedImage, queue_size=10)
         self.land_pub = rospy.Publisher('landing_site', Bool, queue_size=2)
         self.landing = False
+        # TODO: change back for flight
         self.sub_uav_pose = rospy.Subscriber('/mavros/local_position/pose', PoseStamped, self.callback_uav_pose)
+        # self.sub_uav_pose = rospy.Subscriber('/uavasr/pose', PoseStamped, self.callback_uav_pose)
 
         self.br = CvBridge()
 
@@ -99,7 +101,7 @@ class ArucoDetector():
 
 
 def main():
-    rospy.init_node('EGB349_vision', anonymous=True)
+    rospy.init_node('EGH450_vision', anonymous=True)
     rospy.loginfo("Processing images...")
 
     aruco_detect = ArucoDetector()
