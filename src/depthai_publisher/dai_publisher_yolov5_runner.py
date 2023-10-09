@@ -315,7 +315,7 @@ class DepthaiCamera():
             cam.setInterleaved(False)
             cam.preview.link(detection_nn.input)
             cam.setColorOrder(dai.ColorCameraProperties.ColorOrder.BGR)
-            cam.setFps(40)
+            cam.setFps(10)
             print("Using RGB camera...")
         elif cam_source == 'left':
             cam = pipeline.create(dai.node.MonoCamera)
